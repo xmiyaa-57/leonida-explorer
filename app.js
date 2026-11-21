@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   // Les tuiles sont hébergées localement dans le dépôt (copie du dossier GTADB).
-  // Le nom des fichiers suit l'ordre z,x,y : 5,21,100.jpg.
+  // Les fichiers suivent le format z,y,x : 5,60,60.jpg.
   const TILE_ROOT = "./maps/tiles/6/yanis,18/";
   const STORAGE_KEY = "leonidaExplorer.v1";
   const DEFAULT_CATEGORIES = [
@@ -77,20 +77,30 @@
   map.fitBounds(mapBounds, {padding:[18,18]});
   map.setMaxBounds(mapBounds.pad(0.08));
 
-  function markerIcon(category) {
+  function markerIcon(category, symbol) {
     return L.divIcon({
       className:"",
-      html:'<div class="custom-pin" style="background:'+escapeHtml(category.color)+'"></div>',
-      iconSize:[20,24], iconAnchor:[10,22], popupAnchor:[0,-20]
+      html:'<div class="custom-pin" style="background:'+escapeHtml(category.color)+'"><span class="pin-symbol">'+escapeHtml(symbol || "📍")+'</span></div>',
+      iconSize:[24,28], iconAnchor:[12,25], popupAnchor:[0,-23]
     });
+  }
+  function markerPopup(item, category) {
+    return '<div class="marker-popup"><strong>'+escapeHtml(item.symbol || "📍")+' '+escapeHtml(item.title)+'</strong>'+
+      '<div class="popup-category"><span style="background:'+escapeHtml(category.color)+'"></span>'+escapeHtml(category.name)+'</div>'+
+      (item.description ? '<p>'+escapeHtml(item.description).replace(/\n/g,"<br>")+'</p>' : '<p class="popup-empty">Aucune note pour ce repère.</p>')+
+      '<button type="button" class="popup-edit" data-edit-marker="'+escapeHtml(item.id)+'">Modifier le repère</button></div>';
   }
   function renderMarkers() {
     markersById.forEach(layer => map.removeLayer(layer));
     markersById.clear();
     data.markers.forEach(item => {
       const category = categoryFor(item.categoryId);
-      const layer = L.marker([item.lat,item.lng], {icon:markerIcon(category), keyboard:true, title:item.title}).addTo(map);
-      layer.on("click", () => openModal(item.id));
+      const layer = L.marker([item.lat,item.lng], {icon:markerIcon(category,item.symbol), keyboard:true, title:item.title}).addTo(map);
+      layer.bindPopup(markerPopup(item,category), {maxWidth:280});
+      layer.on("popupopen", event => {
+        const button = event.popup.getElement().querySelector("[data-edit-marker]");
+        if (button) button.addEventListener("click", () => { layer.closePopup(); openModal(item.id); });
+      });
       markersById.set(item.id, layer);
     });
     renderSidebar();
@@ -102,9 +112,11 @@
       '<label class="category-row '+(activeCategory==="all"?"active":"")+'"><input type="radio" name="category" value="all" '+(activeCategory==="all"?"checked":"")+'><span class="category-name">Toutes les catégories</span><span class="category-count">'+data.markers.length+'</span></label>' +
       categories.map(c => {
         const count = data.markers.filter(m => m.categoryId===c.id).length;
-        return '<label class="category-row '+(activeCategory===c.id?"active":"")+'"><input type="radio" name="category" value="'+escapeHtml(c.id)+'" '+(activeCategory===c.id?"checked":"")+'><span class="category-color" style="background:'+escapeHtml(c.color)+'"></span><span class="category-name">'+escapeHtml(c.name)+'</span><span class="category-count">'+count+'</span></label>';
+        return '<div class="category-row '+(activeCategory===c.id?"active":"")+'"><label class="category-choice"><input type="radio" name="category" value="'+escapeHtml(c.id)+'" '+(activeCategory===c.id?"checked":"")+'><span class="category-color" style="background:'+escapeHtml(c.color)+'"></span><span class="category-name">'+escapeHtml(c.name)+'</span><span class="category-count">'+count+'</span></label><button class="category-tool" type="button" title="Modifier la catégorie" data-edit-category="'+escapeHtml(c.id)+'">✎</button><button class="category-tool category-remove" type="button" title="Supprimer la catégorie" data-delete-category="'+escapeHtml(c.id)+'">×</button></div>';
       }).join("");
     $("categoryList").querySelectorAll('input[name="category"]').forEach(input => input.addEventListener("change", () => {activeCategory=input.value;renderSidebar();}));
+    $("categoryList").querySelectorAll("[data-edit-category]").forEach(button => button.addEventListener("click", () => editCategory(button.dataset.editCategory)));
+    $("categoryList").querySelectorAll("[data-delete-category]").forEach(button => button.addEventListener("click", () => deleteCategory(button.dataset.deleteCategory)));
     const visible = data.markers.filter(m => (activeCategory==="all" || m.categoryId===activeCategory) && (m.title+" "+m.description).toLocaleLowerCase("fr").includes(query));
     $("markerCount").textContent = data.markers.length;
     $("visibleCount").textContent = visible.length;
@@ -114,7 +126,7 @@
     }).join("") : '<div class="empty-list">'+(data.markers.length ? "Aucun résultat dans cette sélection." : "Aucun repère pour le moment.<br>Active « Ajouter un repère » puis clique sur la carte.")+'</div>';
     $("markerList").querySelectorAll(".marker-card").forEach(card => card.addEventListener("click", () => {
       const layer = markersById.get(card.dataset.id);
-      if (layer) { map.flyTo(layer.getLatLng(), Math.max(map.getZoom(),3), {duration:.5}); openModal(card.dataset.id); }
+      if (layer) { map.flyTo(layer.getLatLng(), Math.max(map.getZoom(),3), {duration:.5}); layer.openPopup(); }
     }));
   }
   function fillCategorySelect(selected) {
@@ -128,6 +140,7 @@
     $("modalTitle").textContent = item ? "Modifier le repère" : "Nouveau repère";
     $("markerTitle").value = item ? item.title : "";
     $("markerDescription").value = item ? item.description : "";
+    $("markerSymbol").value = item ? (item.symbol || "📍") : "📍";
     fillCategorySelect(item ? item.categoryId : (activeCategory!=="all" ? activeCategory : data.categories[0].id));
     $("deleteMarker").hidden = !item;
     $("modalBackdrop").hidden = false;
@@ -165,11 +178,13 @@
       item.title=title;
       item.description=$("markerDescription").value.trim();
       item.categoryId=$("markerCategory").value;
+      item.symbol=$("markerSymbol").value;
     } else if (pendingPoint) {
       data.markers.push({
         id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random().toString(16).slice(2)),
         title, description:$("markerDescription").value.trim(),
         categoryId:$("markerCategory").value,
+        symbol:$("markerSymbol").value,
         lat:pendingPoint.lat, lng:pendingPoint.lng,
         createdAt:new Date().toISOString()
       });
@@ -182,6 +197,36 @@
     data.markers=data.markers.filter(m=>m.id!==editingId);
     saveData(); closeModal(); renderMarkers(); showToast("Repère supprimé.");
   });
+  function editCategory(id) {
+    const category = data.categories.find(c => c.id === id);
+    if (!category) return;
+    const name = prompt("Nom de la catégorie :", category.name);
+    if (name === null || !name.trim()) return;
+    if (data.categories.some(c => c.id !== id && c.name.toLocaleLowerCase("fr") === name.trim().toLocaleLowerCase("fr"))) {
+      showToast("Une catégorie porte déjà ce nom."); return;
+    }
+    const color = prompt("Couleur hexadécimale (ex. #e9a84d) :", category.color);
+    if (color === null) return;
+    if (!/^#[0-9a-fA-F]{6}$/.test(color.trim())) { showToast("Couleur invalide : utilise le format #RRGGBB."); return; }
+    category.name = name.trim().slice(0,30);
+    category.color = color.trim();
+    saveData(); renderMarkers(); showToast("Catégorie mise à jour.");
+  }
+  function deleteCategory(id) {
+    if (data.categories.length <= 1) { showToast("Il faut conserver au moins une catégorie."); return; }
+    const category = data.categories.find(c => c.id === id);
+    if (!category) return;
+    const replacement = data.categories.find(c => c.id !== id);
+    const count = data.markers.filter(m => m.categoryId === id).length;
+    const message = count
+      ? "Cette catégorie contient "+count+" repère(s). Ils seront déplacés dans « "+replacement.name+" ». Continuer ?"
+      : "Supprimer la catégorie « "+category.name+" » ?";
+    if (!confirm(message)) return;
+    data.markers.forEach(marker => { if (marker.categoryId === id) marker.categoryId = replacement.id; });
+    data.categories = data.categories.filter(c => c.id !== id);
+    if (activeCategory === id) activeCategory = "all";
+    saveData(); renderMarkers(); showToast("Catégorie supprimée.");
+  }
   $("addCategoryBtn").addEventListener("click", () => {
     const name=prompt("Nom de la nouvelle catégorie :");
     if (!name || !name.trim()) return;
