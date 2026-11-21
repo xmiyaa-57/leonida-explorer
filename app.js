@@ -60,7 +60,7 @@
     keepBuffer:4, updateWhenZooming:false, updateWhenIdle:true,
     attribution:'Carte communautaire YANIS V18 · <a href="https://map.gtadb.org/" target="_blank" rel="noopener">GTADB.ORG</a> · CC BY 4.0'
   }).addTo(map);
-  map.fitBounds(mapBounds, {padding:[18,18]});
+  map.setView([-448, 384], 1);
   map.setMaxBounds(mapBounds.pad(0.08));
 
   function markerIcon(category) {
@@ -180,7 +180,7 @@
     activeCategory=id; saveData(); renderSidebar(); showToast("Catégorie créée.");
   });
   $("searchInput").addEventListener("input",renderSidebar);
-  $("resetView").addEventListener("click",()=>map.fitBounds(mapBounds,{padding:[18,18],animate:true}));
+  $("resetView").addEventListener("click",()=>map.setView([-448,384],1,{animate:true}));
   $("exportBtn").addEventListener("click",()=>{
     const blob=new Blob([JSON.stringify({app:"Leonida Explorer",version:1,...data},null,2)],{type:"application/json"});
     const url=URL.createObjectURL(blob); const a=document.createElement("a");a.href=url;a.download="leonida-explorer-backup.json";a.click();URL.revokeObjectURL(url);showToast("Sauvegarde exportée.");
