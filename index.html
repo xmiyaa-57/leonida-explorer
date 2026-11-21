@@ -54,6 +54,13 @@
         <input id="markerTitle" maxlength="70" required placeholder="Ex. Un endroit à explorer">
         <label class="field-label" for="markerCategory">Catégorie</label>
         <select id="markerCategory"></select>
+        <label class="field-label" for="markerSymbol">Icône du repère</label>
+        <select id="markerSymbol">
+          <option value="📍">📍 Repère</option><option value="⭐">⭐ Favori</option><option value="🏠">🏠 Bâtiment / maison</option>
+          <option value="🚗">🚗 Véhicule</option><option value="🏪">🏪 Commerce</option><option value="🍔">🍔 Restaurant</option>
+          <option value="🎯">🎯 Objectif</option><option value="🔒">🔒 Secret</option><option value="🌴">🌴 Nature</option>
+          <option value="📷">📷 Point de vue</option><option value="⚓">⚓ Port</option>
+        </select>
         <label class="field-label" for="markerDescription">Notes / détails</label>
         <textarea id="markerDescription" rows="4" maxlength="1000" placeholder="Ajoute tes informations…"></textarea>
         <div class="form-actions"><button type="button" id="deleteMarker" class="danger" hidden>Supprimer</button><span class="form-spacer"></span><button type="button" id="cancelModal" class="quiet">Annuler</button><button type="submit" class="primary">Enregistrer</button></div>
