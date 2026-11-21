@@ -69,7 +69,7 @@
     [-(SOURCE_MAX_Y + 1) * UNIT, SOURCE_MIN_X * UNIT],
     [-SOURCE_MIN_Y * UNIT, (SOURCE_MAX_X + 1) * UNIT]
   );
-  L.tileLayer(TILE_ROOT + "{z}/{z},{x},{y}.jpg", {
+  L.tileLayer(TILE_ROOT + "{z}/{z},{y},{x}.jpg", {
     minZoom:0, maxZoom:5, tileSize:256, noWrap:true, bounds:mapBounds,
     keepBuffer:4, updateWhenZooming:false, updateWhenIdle:true,
     attribution:'Carte communautaire YANIS V18 · <a href="https://map.gtadb.org/" target="_blank" rel="noopener">GTADB.ORG</a> · CC BY 4.0'
