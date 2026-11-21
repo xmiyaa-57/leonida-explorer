@@ -1,6 +1,8 @@
 (() => {
   "use strict";
-  const TILE_ROOT = "https://maps.gtadb.org/tiles/6/yanis,18/";
+  // Les tuiles sont hébergées localement dans le dépôt (copie du dossier GTADB).
+  // Le nom des fichiers suit l'ordre z,x,y : 5,21,100.jpg.
+  const TILE_ROOT = "./maps/tiles/6/yanis,18/";
   const STORAGE_KEY = "leonidaExplorer.v1";
   const DEFAULT_CATEGORIES = [
     { id:"repere", name:"Repères", color:"#e9a84d" },
@@ -54,8 +56,20 @@
     maxBoundsViscosity: 0.85,
     attributionControl: true
   });
-  const mapBounds = L.latLngBounds([-1024,0],[0,1024]);
-  L.tileLayer(TILE_ROOT + "{z}/{z},{y},{x}.jpg", {
+  // Emprise exacte de YANIS V18 au niveau 5 : x=21..103, y=21..99.
+  // CRS.Simple : les coordonnées sont exprimées dans l'échelle du niveau 0.
+  const TILE_SIZE = 256;
+  const MAX_SOURCE_ZOOM = 5;
+  const SOURCE_MIN_X = 21;
+  const SOURCE_MAX_X = 103;
+  const SOURCE_MIN_Y = 21;
+  const SOURCE_MAX_Y = 99;
+  const UNIT = TILE_SIZE / Math.pow(2, MAX_SOURCE_ZOOM);
+  const mapBounds = L.latLngBounds(
+    [-(SOURCE_MAX_Y + 1) * UNIT, SOURCE_MIN_X * UNIT],
+    [-SOURCE_MIN_Y * UNIT, (SOURCE_MAX_X + 1) * UNIT]
+  );
+  L.tileLayer(TILE_ROOT + "{z}/{z},{x},{y}.jpg", {
     minZoom:0, maxZoom:5, tileSize:256, noWrap:true, bounds:mapBounds,
     keepBuffer:4, updateWhenZooming:false, updateWhenIdle:true,
     attribution:'Carte communautaire YANIS V18 · <a href="https://map.gtadb.org/" target="_blank" rel="noopener">GTADB.ORG</a> · CC BY 4.0'
