@@ -28,7 +28,7 @@ h1{font-size:27px}
 .section-title{display:flex;align-items:center;justify-content:space-between;margin:22px 0 10px;color:#9eabb8;font-size:9px;font-weight:700;letter-spacing:1.4px}
 .text-button{background:none;border:0;color:var(--accent);font-size:10px;font-weight:600;padding:3px}
 .category-list{display:flex;flex-direction:column;gap:3px;max-height:180px;overflow:auto}
-.category-row{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:5px;font-size:11px;color:#cbd3da;cursor:pointer}
+.category-row{display:flex;align-items:center;gap:3px;padding:3px 4px;border-radius:5px;font-size:11px;color:#cbd3da}.category-choice{display:flex;align-items:center;gap:8px;min-width:0;flex:1;padding:4px;cursor:pointer}.category-tool{border:0;background:transparent;color:#8190a0;border-radius:4px;padding:3px 5px;font-size:12px;line-height:1}.category-tool:hover{background:#3a4857;color:#fff}.category-remove:hover{background:#57302e;color:#ffaaa3}
 .category-row:hover,.category-row.active{background:#27323f}
 .category-row input{accent-color:var(--accent)}
 .category-color{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
@@ -60,7 +60,7 @@ h1{font-size:27px}
 .leaflet-control-zoom a{background:#18222d!important;color:#f0f2f4!important;border-color:#3a4654!important}
 .leaflet-control-attribution{background:#121922d9!important;color:#aab5c0!important;font-size:9px!important}
 .leaflet-control-attribution a{color:#e6b76f!important}
-.custom-pin{width:19px;height:19px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 8px #0009}
+.custom-pin{width:23px;height:23px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 8px #0009;display:grid;place-items:center}.pin-symbol{transform:rotate(45deg);font-size:12px;line-height:1;text-shadow:0 1px 2px #0008}.marker-popup strong{display:block;font-size:14px;color:#17212b;margin-bottom:7px}.popup-category{display:flex;align-items:center;gap:6px;font-size:11px;color:#596777}.popup-category span{width:8px;height:8px;border-radius:50%}.marker-popup p{font-size:12px;line-height:1.5;color:#344252;white-space:normal;margin:9px 0}.marker-popup .popup-empty{color:#7b8793;font-style:italic}.popup-edit{border:0;border-radius:4px;background:#d99c48;color:#18212a;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer}.popup-edit:hover{background:#edb866}
 .modal-backdrop{position:fixed;inset:0;z-index:1000;background:#05090ec9;display:grid;place-items:center;padding:16px}
 .modal-backdrop[hidden]{display:none}
 .modal{width:min(440px,100%);background:#19222d;border:1px solid #3a4857;border-radius:10px;padding:22px;box-shadow:0 20px 70px #0009}
