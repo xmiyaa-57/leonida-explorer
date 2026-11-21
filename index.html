@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151c">
+  <meta name="description" content="Carte personnelle interactive de Leonida — annotations privées et catégories personnalisées.">
+  <title>Leonida Explorer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark">L</span><span>LEONIDA <b>EXPLORER</b><small>PERSONAL MAP</small></span></a>
+    <div class="top-actions">
+      <button id="addMode" class="primary">＋ Ajouter un repère</button>
+      <button id="exportBtn" class="quiet">Exporter</button>
+      <button id="importBtn" class="quiet">Importer</button>
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="sidebar">
+      <div class="side-heading">
+        <div><p class="eyebrow">TON CARNET DE VOYAGE</p><h1>Mes repères</h1></div>
+        <span id="markerCount" class="count">0</span>
+      </div>
+      <p class="intro">Ajoute tes propres lieux sur la carte. Tes annotations restent enregistrées dans ce navigateur.</p>
+      <label class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Rechercher un repère…"></label>
+      <div class="section-title"><span>CATÉGORIES</span><button id="addCategoryBtn" class="text-button">＋ Créer</button></div>
+      <div id="categoryList" class="category-list"></div>
+      <div class="section-title marker-heading"><span>MES ANNOTATIONS</span><span id="visibleCount">0</span></div>
+      <div id="markerList" class="marker-list"><div class="empty-list">Aucun repère pour le moment.<br>Active « Ajouter un repère » puis clique sur la carte.</div></div>
+      <div class="sidebar-bottom">
+        <button id="resetView" class="wide-button">◎ Recentrer la carte</button>
+        <p class="storage-note"><span class="online-dot"></span> Sauvegarde locale automatique</p>
+      </div>
+    </aside>
+
+    <section class="map-area">
+      <div class="map-caption"><span class="map-dot"></span><span>LEONIDA · YANIS V18</span><span class="caption-separator">/</span><span id="mapStatus">Carte prête</span></div>
+      <div id="map"></div>
+      <div class="map-hint" id="mapHint">Déplace-toi sur la carte · Molette pour zoomer</div>
+      <div class="map-legend"><span class="legend-dot"></span> Mes repères</div>
+    </section>
+  </main>
+
+  <div id="modalBackdrop" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><p class="eyebrow">ANNOTATION PERSONNELLE</p><h2 id="modalTitle">Nouveau repère</h2></div><button id="closeModal" class="close-button" aria-label="Fermer">×</button></div>
+      <form id="markerForm">
+        <label class="field-label" for="markerTitle">Nom du repère</label>
+        <input id="markerTitle" maxlength="70" required placeholder="Ex. Un endroit à explorer">
+        <label class="field-label" for="markerCategory">Catégorie</label>
+        <select id="markerCategory"></select>
+        <label class="field-label" for="markerDescription">Notes / détails</label>
+        <textarea id="markerDescription" rows="4" maxlength="1000" placeholder="Ajoute tes informations…"></textarea>
+        <div class="form-actions"><button type="button" id="deleteMarker" class="danger" hidden>Supprimer</button><span class="form-spacer"></span><button type="button" id="cancelModal" class="quiet">Annuler</button><button type="submit" class="primary">Enregistrer</button></div>
+      </form>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <footer>Fond de carte communautaire YANIS V18 · GTADB.ORG et contributeurs · CC BY 4.0 · Projet de fans non officiel, sans affiliation avec Rockstar Games.</footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
